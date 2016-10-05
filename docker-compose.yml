@@ -1,0 +1,29 @@
+version: '2'
+services:
+ web:
+   image: nginx:latest
+   container_name: webzash-web
+   ports:
+    - "8080:80"
+   volumes:
+    - ..:/var/www/webzash
+    - ./docker-compose/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+   link:
+    - app
+ db:
+   image: postgres:latest
+   container_name: webzash-db
+   environment:
+    - POSTGRES_USER=webzash
+    - POSTGRES_PASSWORD=webzash
+    - POSTGRES_DB=webzash
+ app:
+   build: .
+   dockerfile: ./docker-compose/php-fpm/Dockerfile
+   container_name: webzash-app
+   build: .
+   volumes:
+    - ..:/var/www/webzash
+    - ./docker-compose/php-fpm/php-ini-overrides.ini:/etc/php/7.0/fpm/conf.d/99-overrides.ini
+   link:
+    - db
